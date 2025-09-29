@@ -3,6 +3,7 @@ package net.rose.legion.mixin.tooltip;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.TippedArrowItem;
+import net.minecraft.potion.PotionUtil;
 import net.minecraft.text.Text;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -29,6 +30,10 @@ public class TippedArrowItemMixin {
             TooltipContext context,
             CallbackInfo ci
     ) {
+        if (PotionUtil.getPotionEffects(stack).isEmpty()) {
+            return;
+        }
+
         ci.cancel();
     }
 }
