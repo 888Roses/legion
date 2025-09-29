@@ -23,6 +23,7 @@
   "mixins": [
     "legion.mixins.json"
   ],
+  "accessWidener": "legion.accesswidener",
   "depends": {
     "fabricloader": ">=${loader_version}",
     "fabric": "*",

@@ -57,16 +57,25 @@ public abstract class ChatHudMixin {
     private int scrolledLines;
 
     @Shadow
-    protected abstract int getIndicatorX(ChatHudLine.Visible line);
+    protected abstract int getIndicatorX(
+            ChatHudLine.Visible line
+    );
 
     @Shadow
-    protected abstract void drawIndicatorIcon(DrawContext context, int x, int y, MessageIndicator.Icon icon);
+    protected abstract void drawIndicatorIcon(
+            DrawContext context,
+            int x,
+            int y,
+            MessageIndicator.Icon icon
+    );
 
     @Shadow
     private boolean hasUnreadNewMessages;
 
     @Unique
-    private static double getMessageOpacityMultiplier(int age) {
+    private static double getMessageOpacityMultiplier(
+            int age
+    ) {
         var d = (double) age / 200.0;
         d = 1.0 - d;
         d *= 10.0;
@@ -141,8 +150,8 @@ public abstract class ChatHudMixin {
                             if (this.client.player != null) {
                                 final var converter = new OrderedTextConverter();
                                 visibleMessage.content().accept(converter);
-
-                                if (converter.getText().getString().split(">")[1].contains(this.client.player.getEntityName())) {
+                                final var content = converter.getText().getString();
+                                if (content.contains(">") && content.split(">")[1].contains(this.client.player.getEntityName())) {
                                     backgroundColour = ColorHelper.Argb.getArgb(
                                             messageBackgroundOpacity,
                                             255,

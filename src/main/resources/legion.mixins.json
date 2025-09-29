@@ -11,7 +11,8 @@
     "tooltip.TippedArrowItemMixin"
   ],
   "client": [
-    "ChatHudMixin"
+    "ChatHudMixin",
+    "item.DrawContextMixin"
   ],
   "injectors": {
     "defaultRequire": 1
