@@ -1,9 +1,11 @@
 package net.rose.legion.mixin.tooltip;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.item.TooltipData;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NbtElement;
 import net.rose.legion.common.tooltip.PotionTooltipData;
@@ -65,6 +67,17 @@ public class ItemMixin {
                     ));
                 }
             }
+        }
+
+        if (itemStack.isOf(Items.TOTEM_OF_UNDYING)) {
+            cir.setReturnValue(Optional.of(new PotionTooltipData(
+                    ImmutableList.<StatusEffectInstance>builder()
+                            .add(new StatusEffectInstance(StatusEffects.REGENERATION, 900, 1))
+                            .add(new StatusEffectInstance(StatusEffects.ABSORPTION, 100, 1))
+                            .add(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 800, 0))
+                            .build(),
+                    1
+            )));
         }
     }
 
