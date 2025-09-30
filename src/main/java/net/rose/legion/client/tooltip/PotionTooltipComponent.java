@@ -36,7 +36,8 @@ public class PotionTooltipComponent implements TooltipComponent {
                 .stream()
                 .map(instance -> RenderableStatusEffect.fromInstance(
                         instance,
-                        this.tooltipData.getDurationMultiplier()
+                        this.tooltipData.getDurationMultiplier(),
+                        this.tooltipData.getChance(instance)
                 ))
                 .toArray(RenderableStatusEffect[]::new);
     }
@@ -71,7 +72,14 @@ public class PotionTooltipComponent implements TooltipComponent {
     ) {
         final var name = Text.translatable(renderable.effect().getTranslationKey());
         final var level = Text.literal(" " + RomanNumber.toRoman(renderable.level() + 1));
-        return (name.append(level)).styled(style -> style.withColor(renderable.effect().getColor()));
+        var chanceText = Text.literal("");
+
+        if (renderable.chance < 1) {
+            final var chanceInt = Math.round(renderable.chance * 100);
+            chanceText = Text.literal(" (" + chanceInt + "%)").formatted(Formatting.DARK_GRAY);
+        }
+
+        return (name.append(level)).styled(style -> style.withColor(renderable.effect().getColor())).append(chanceText);
     }
 
     @Override
@@ -186,11 +194,13 @@ public class PotionTooltipComponent implements TooltipComponent {
             StatusEffect effect,
             Text durationText,
             int level,
+            float chance,
             Sprite sprite
     ) {
         public static RenderableStatusEffect fromInstance(
                 StatusEffectInstance instance,
-                double durationMultiplier
+                double durationMultiplier,
+                float chance
         ) {
             return new RenderableStatusEffect(
                     instance.getEffectType(),
@@ -199,6 +209,7 @@ public class PotionTooltipComponent implements TooltipComponent {
                             (float) durationMultiplier
                     ),
                     instance.getAmplifier(),
+                    chance,
                     MinecraftClient
                             .getInstance()
                             .getStatusEffectSpriteManager()

@@ -10,6 +10,7 @@ import java.util.List;
 
 public class PotionTooltipData implements TooltipData {
     private final List<StatusEffectInstance> effects;
+    private List<Float> chances;
     private final double durationMultiplier;
 
     public PotionTooltipData(
@@ -18,6 +19,11 @@ public class PotionTooltipData implements TooltipData {
     ) {
         this.effects = effects;
         this.durationMultiplier = durationMultiplier;
+
+        this.chances = new ArrayList<>(effects.size());
+        for (var i = 0; i < effects.size(); i++) {
+            this.chances.add(i, 1F);
+        }
     }
 
     public PotionTooltipData(
@@ -33,11 +39,36 @@ public class PotionTooltipData implements TooltipData {
         this.effects.addAll(customPotionEffects);
     }
 
+    public PotionTooltipData withChances(List<Float> chances) {
+        this.chances = chances;
+        return this;
+    }
+
+    public List<Float> getChances() {
+        return this.chances;
+    }
+
     public double getDurationMultiplier() {
         return this.durationMultiplier;
     }
 
     public List<StatusEffectInstance> getEffects() {
         return this.effects;
+    }
+
+    public float getChance(StatusEffectInstance instance) {
+        if (this.chances.isEmpty() || this.effects.isEmpty()) {
+            return 1;
+        }
+
+        if (this.effects.size() != this.chances.size()) {
+            return 1;
+        }
+
+        if (this.effects.contains(instance)) {
+            return this.chances.get(this.effects.indexOf(instance));
+        }
+
+        return 1;
     }
 }

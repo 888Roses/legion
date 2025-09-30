@@ -1,12 +1,11 @@
 package net.rose.legion.mixin.tooltip;
 
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.item.TooltipData;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.*;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
 import net.rose.legion.common.tooltip.PotionTooltipData;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -43,29 +42,62 @@ public class ItemMixin {
                     1
             )));
         }
+
+        if (itemStack.getItem().isFood()) {
+            final var foodComponent = itemStack.getItem().getFoodComponent();
+            if (foodComponent != null) {
+                final var statusEffectPairs = foodComponent.getStatusEffects();
+                if (statusEffectPairs != null && !statusEffectPairs.isEmpty()) {
+
+                    cir.setReturnValue(Optional.of(
+                            new PotionTooltipData(
+                                    statusEffectPairs
+                                            .stream()
+                                            .map(Pair::getFirst)
+                                            .toList(),
+                                    1
+                            ).withChances(
+                                    statusEffectPairs
+                                            .stream()
+                                            .map(Pair::getSecond)
+                                            .toList()
+                            )
+                    ));
+                }
+            }
+        }
     }
 
     @Unique
     private static ArrayList<StatusEffectInstance> getStewEffects(ItemStack stew) {
         final var list = new ArrayList<StatusEffectInstance>();
+        final var nbt = stew.getNbt();
 
-        NbtCompound nbtCompound = stew.getNbt();
-        if (nbtCompound != null && nbtCompound.contains("Effects", NbtElement.LIST_TYPE)) {
-            NbtList nbtList = nbtCompound.getList("Effects", NbtElement.COMPOUND_TYPE);
+        if (nbt == null) {
+            return list;
+        }
 
-            for(int i = 0; i < nbtList.size(); ++i) {
-                NbtCompound nbtCompound2 = nbtList.getCompound(i);
-                int j;
-                if (nbtCompound2.contains("EffectDuration", NbtElement.NUMBER_TYPE)) {
-                    j = nbtCompound2.getInt("EffectDuration");
-                } else {
-                    j = 160;
+        if (nbt.contains("Effects", NbtElement.LIST_TYPE)) {
+            final var effects = nbt.getList("Effects", NbtElement.COMPOUND_TYPE);
+
+            for (var i = 0; i < effects.size(); ++i) {
+                final var effectNbt = effects.getCompound(i);
+                var effectDuration = 0;
+
+                if (effectNbt.contains("EffectDuration", NbtElement.NUMBER_TYPE)) {
+                    effectDuration = effectNbt.getInt("EffectDuration");
+                }
+                else {
+                    effectDuration = 160;
                 }
 
-                StatusEffect statusEffect = StatusEffect.byRawId(nbtCompound2.getInt("EffectId"));
-                if (statusEffect != null) {
-                    list.add(new StatusEffectInstance(statusEffect, j));
+                final var effect = StatusEffect.byRawId(effectNbt.getInt("EffectId"));
+
+                if (effect == null) {
+                    continue;
                 }
+
+                list.add(new StatusEffectInstance(effect, effectDuration));
             }
         }
 
