@@ -4,6 +4,7 @@
   "package": "net.rose.legion.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "item.ItemMixin",
     "tooltip.ItemMixin",
     "tooltip.LingeringPotionItemMixin",
     "tooltip.PotionItemMixin",
@@ -12,7 +13,8 @@
   ],
   "client": [
     "ChatHudMixin",
-    "item.DrawContextMixin"
+    "item.DrawContextMixin",
+    "snowflake.SnowflakeParticleMixin"
   ],
   "injectors": {
     "defaultRequire": 1
