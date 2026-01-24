@@ -7,32 +7,32 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.client.network.ClientMannequinEntity;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.entity.EntityRenderManager;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.state.EntityRenderState;
-import net.minecraft.client.render.entity.state.LivingEntityRenderState;
-import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.EquippableComponent;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.passive.HappyGhastEntity;
-import net.minecraft.entity.passive.HorseEntity;
-import net.minecraft.entity.passive.NautilusEntity;
-import net.minecraft.entity.passive.WolfEntity;
-import net.minecraft.item.Items;
-import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.world.World;
 import net.rose.legion.common.tooltip.ArmorTooltipData;
+import net.rose.legion.common.tooltip.ArmorTooltipPreviewHandler;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-public record ArmorTooltipComponent(ArmorTooltipData armorTooltipData) implements TooltipComponent {
+import java.util.ArrayList;
+import java.util.List;
+
+public record ArmorTooltipComponent(ArmorTooltipData data) implements TooltipComponent {
+    private static final List<ArmorTooltipPreviewHandler> PREVIEW_HANDLERS = new ArrayList<>();
+
+    public static void registerPreviewHandler(ArmorTooltipPreviewHandler handler) {
+        PREVIEW_HANDLERS.add(handler);
+    }
+
     @Override
     public int getHeight(TextRenderer textRenderer) {
         return 32;
@@ -53,100 +53,59 @@ public record ArmorTooltipComponent(ArmorTooltipData armorTooltipData) implement
             return;
         }
 
-        EquippableComponent equippableComponent = armorTooltipData.itemStack().get(DataComponentTypes.EQUIPPABLE);
+        EquippableComponent equippableComponent = data.itemStack().get(DataComponentTypes.EQUIPPABLE);
         if (equippableComponent != null) {
             EquipmentSlot slot = equippableComponent.slot();
 
-            LivingEntity livingEntity = null;
-            float scale = 1;
-            float yOffset = 0;
+            EntityInfo entityInfo = null;
+            ArmorTooltipPreviewHandler validHandler = null;
 
-            if (slot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR || slot == EquipmentSlot.OFFHAND) {
-                livingEntity = new ClientMannequinEntity(world, client.getPlayerSkinCache());
-
-                scale = 32;
-
-                if (slot == EquipmentSlot.HEAD) yOffset = 1.475f;
-                if (slot == EquipmentSlot.CHEST) yOffset = 1.025f;
-                if (slot == EquipmentSlot.LEGS) yOffset = 0.425f;
-                if (slot == EquipmentSlot.FEET) yOffset = 0.125f;
-                if (slot == EquipmentSlot.OFFHAND) {
-                    scale = 28;
-                    yOffset = 0.8f;
+            for (ArmorTooltipPreviewHandler handler : PREVIEW_HANDLERS) {
+                if (handler.validate(this, slot)) {
+                    entityInfo = handler.getEntityInfo(this, slot);
+                    validHandler = handler;
+                    break;
                 }
             }
 
-            if (armorTooltipData.itemStack().isIn(ItemTags.HARNESSES)) {
-                livingEntity = new HappyGhastEntity(EntityType.HAPPY_GHAST, world);
-
-                scale = 6;
-                yOffset = 1f;
-            }
-
-            if (armorTooltipData.itemStack().isOf(Items.SADDLE)
-                    || armorTooltipData.itemStack().isOf(Items.LEATHER_HORSE_ARMOR)
-                    || armorTooltipData.itemStack().isOf(Items.COPPER_HORSE_ARMOR)
-                    || armorTooltipData.itemStack().isOf(Items.IRON_HORSE_ARMOR)
-                    || armorTooltipData.itemStack().isOf(Items.GOLDEN_HORSE_ARMOR)
-                    || armorTooltipData.itemStack().isOf(Items.DIAMOND_HORSE_ARMOR)
-                    || armorTooltipData.itemStack().isOf(Items.NETHERITE_HORSE_ARMOR)) {
-                livingEntity = new HorseEntity(EntityType.HORSE, world);
-                scale = 16;
-                yOffset = 1.1f;
-            }
-
-            if (armorTooltipData.itemStack().isOf(Items.COPPER_NAUTILUS_ARMOR)
-                    || armorTooltipData.itemStack().isOf(Items.IRON_NAUTILUS_ARMOR)
-                    || armorTooltipData.itemStack().isOf(Items.GOLDEN_NAUTILUS_ARMOR)
-                    || armorTooltipData.itemStack().isOf(Items.DIAMOND_NAUTILUS_ARMOR)
-                    || armorTooltipData.itemStack().isOf(Items.NETHERITE_NAUTILUS_ARMOR)) {
-                livingEntity = new NautilusEntity(EntityType.NAUTILUS, world);
-                scale = 20;
-                yOffset = 0.5f;
-            }
-
-            if (armorTooltipData.itemStack().isOf(Items.WOLF_ARMOR)) {
-                livingEntity = new WolfEntity(EntityType.WOLF, world);
-                scale = 28;
-                yOffset = 0.5f;
-            }
-
-            if (livingEntity == null) {
+            if (entityInfo == null) {
                 return;
             }
 
-            livingEntity.equipStack(slot, armorTooltipData.itemStack());
-
-            EntityRenderState renderState = drawEntity(livingEntity);
-            if (renderState instanceof LivingEntityRenderState livingEntityRenderState) {
-                livingEntityRenderState.bodyYaw = 0;
-                livingEntityRenderState.relativeHeadYaw = 0;
-
-                if (livingEntityRenderState instanceof PlayerEntityRenderState playerRenderState) {
-                    playerRenderState.skinTextures = clientPlayer.getSkin();
-                }
+            EntityRenderState entityRenderState = entityInfo.renderState();
+            if (entityRenderState == null) {
+                return;
             }
+
+            validHandler.modifyRenderState(this, entityRenderState);
 
             double smoothTime = math.lerp(RenderHelper.getTickDelta(), world.getTime() - 1, world.getTime());
             Quaternionf rotation = RenderHelper.rotation(new double3(25, smoothTime, 180).modify(math::deg2rad));
             Quaternionf cameraAngle = RenderHelper.rotation(new double3(0, 0, 0).modify(math::deg2rad));
 
             context.addEntity(
-                    renderState, scale, new Vector3f(0f, yOffset, 0f),
+                    entityRenderState, entityInfo.scale(), new Vector3f(0f, entityInfo.verticalOffset(), 0f),
                     rotation, cameraAngle,
                     x, y, x + getWidth(textRenderer), y + getHeight(textRenderer)
             );
         }
     }
 
-    private static @Nullable EntityRenderState drawEntity(LivingEntity entity) {
-        EntityRenderManager entityRenderManager = MinecraftClient.getInstance().getEntityRenderDispatcher();
-        EntityRenderer<? super LivingEntity, ?> entityRenderer = entityRenderManager.getRenderer(entity);
-        if (entityRenderer == null) return null;
-        EntityRenderState entityRenderState = entityRenderer.getAndUpdateRenderState(entity, 1.0F);
-        entityRenderState.light = LightmapTextureManager.MAX_LIGHT_COORDINATE;
-        entityRenderState.shadowPieces.clear();
-        entityRenderState.outlineColor = 0;
-        return entityRenderState;
+    public record EntityInfo(LivingEntity livingEntity, float scale, float verticalOffset) {
+        public @Nullable EntityRenderState renderState() {
+            EntityRenderManager entityRenderManager = MinecraftClient.getInstance().getEntityRenderDispatcher();
+            EntityRenderer<? super LivingEntity, ?> entityRenderer = entityRenderManager.getRenderer(livingEntity);
+
+            if (entityRenderer == null) {
+                return null;
+            }
+
+            EntityRenderState renderState = entityRenderer.getAndUpdateRenderState(livingEntity, RenderHelper.getTickDelta());
+            renderState.light = LightmapTextureManager.MAX_LIGHT_COORDINATE;
+            renderState.shadowPieces.clear();
+            renderState.outlineColor = 0;
+
+            return renderState;
+        }
     }
 }
