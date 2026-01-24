@@ -1,5 +1,6 @@
 package net.rose.legion.common;
 
+import net.collectively.geode.Geode;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
@@ -17,5 +18,7 @@ public class Legion implements ModInitializer {
     public void onInitialize() {
         LOGGER.info("Initializing mod Legion!");
         LOGGER.info("Thanks for using my mod <3 - Rosenoire");
+
+        Geode.setHookedMod(MOD_ID);
     }
 }

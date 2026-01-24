@@ -4,10 +4,10 @@
   "package": "net.rose.legion.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "tooltip.ItemMixin"
+    "ItemMixin"
   ],
   "client": [
-    "item.DrawContextMixin"
+    "DrawContextMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -1,8 +1,9 @@
-package net.rose.legion.mixin.tooltip;
+package net.rose.legion.mixin;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ConsumableComponent;
+import net.minecraft.component.type.EquippableComponent;
 import net.minecraft.component.type.SuspiciousStewEffectsComponent;
 import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -13,6 +14,7 @@ import net.minecraft.item.consume.ConsumeEffect;
 import net.minecraft.item.tooltip.TooltipData;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
+import net.rose.legion.common.tooltip.ArmorTooltipData;
 import net.rose.legion.common.tooltip.PotionTooltipData;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -75,6 +77,11 @@ public class ItemMixin {
                             .build(),
                     1
             )));
+        }
+
+        EquippableComponent equippableComponent = itemStack.get(DataComponentTypes.EQUIPPABLE);
+        if (equippableComponent != null) {
+            cir.setReturnValue(Optional.of(new ArmorTooltipData(itemStack)));
         }
     }
 
