@@ -23,6 +23,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.HappyGhastEntity;
 import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.entity.passive.NautilusEntity;
+import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.item.Items;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.world.World;
@@ -101,6 +102,12 @@ public record ArmorTooltipComponent(ArmorTooltipData armorTooltipData) implement
                     || armorTooltipData.itemStack().isOf(Items.NETHERITE_NAUTILUS_ARMOR)) {
                 livingEntity = new NautilusEntity(EntityType.NAUTILUS, world);
                 scale = 20;
+                yOffset = 0.5f;
+            }
+
+            if (armorTooltipData.itemStack().isOf(Items.WOLF_ARMOR)) {
+                livingEntity = new WolfEntity(EntityType.WOLF, world);
+                scale = 28;
                 yOffset = 0.5f;
             }
 
