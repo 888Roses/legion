@@ -1,38 +1,37 @@
 package net.rose.legion.client.tooltip;
 
-import com.google.common.collect.Lists;
-import com.mojang.datafixers.util.Pair;
-import net.fabricmc.fabric.api.client.rendering.v1.FabricRenderPipeline;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.client.texture.Sprite;
+import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectUtil;
-import net.minecraft.item.ItemStack;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.math.ColorHelper;
 import net.rose.legion.common.tooltip.PotionTooltipData;
 import net.rose.legion.fundation.util.RomanNumber;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
+import java.util.*;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class PotionTooltipComponent implements TooltipComponent {
     private final PotionTooltipData tooltipData;
     private final RenderableStatusEffect[] renderableStatusEffects;
 
-    public PotionTooltipComponent(
-            PotionTooltipData tooltipData
-    ) {
+    public PotionTooltipComponent(PotionTooltipData tooltipData) {
         this.tooltipData = tooltipData;
 
-        this.renderableStatusEffects = this.tooltipData
+        renderableStatusEffects = this.tooltipData
                 .getEffects()
                 .stream()
                 .map(instance -> RenderableStatusEffect.fromInstance(
@@ -45,14 +44,12 @@ public class PotionTooltipComponent implements TooltipComponent {
 
     @Override
     public int getHeight(TextRenderer textRenderer) {
-        return (18 + 2) * this.renderableStatusEffects.length + 4 - 1;
+        return 20 * this.renderableStatusEffects.length + 3;
     }
 
     @Override
     public int getWidth(TextRenderer textRenderer) {
-        var width = 18 + 2 + 4;
-
-        return width + Math.max(
+        return 24 + Math.max(
                 Arrays.stream(this.renderableStatusEffects)
                         .map(this::getPotionStatsText)
                         .map(text -> textRenderer.getWidth(text.asOrderedText()))
@@ -66,46 +63,40 @@ public class PotionTooltipComponent implements TooltipComponent {
         );
     }
 
-    private Text getNameText(
-            RenderableStatusEffect renderable
-    ) {
-        final var name = Text.translatable(renderable.effect().getTranslationKey());
-        final var level = Text.literal(" " + RomanNumber.toRoman(renderable.level() + 1));
-        var chanceText = Text.literal("");
+    private Text getNameText(RenderableStatusEffect renderable) {
+        MutableText nameText = Text.translatable(renderable.nameTranslationKey());
+        MutableText levelText = Text.literal(" " + RomanNumber.toRoman(renderable.amplifier() + 1));
+        MutableText chanceText = Text.literal("");
 
         if (renderable.chance < 1) {
-            final var chanceInt = Math.round(renderable.chance * 100);
+            int chanceInt = Math.round(renderable.chance * 100);
             chanceText = Text.literal(" (" + chanceInt + "%)").formatted(Formatting.DARK_GRAY);
         }
 
-        return (name.append(level)).styled(style -> style.withColor(renderable.effect().getColor())).append(chanceText);
+        return nameText.append(levelText).withColor(renderable.effect().value().getColor()).append(chanceText);
     }
 
     @Override
     public void drawItems(TextRenderer textRenderer, int x, int y, int width, int height, DrawContext context) {
-        var stackHeight = -1;
+        int stackHeight = -1;
 
-        for (var renderable : this.renderableStatusEffects) {
-            context.drawSprite(
-                    context,
-                    renderable.sprite(),
-                    x + 2,
-                    y + 2 + stackHeight,
-                    0,
-                    18,
-                    18
+        for (RenderableStatusEffect statusEffect : this.renderableStatusEffects) {
+            context.drawGuiTexture(
+                    RenderPipelines.GUI_TEXTURED,
+                    InGameHud.getEffectTexture(statusEffect.effect()),
+                    x + 2, y + 2 + stackHeight, 18, 18, 0xffFFFFFF
             );
 
             context.drawText(
                     textRenderer,
-                    this.getNameText(renderable),
+                    getNameText(statusEffect),
                     x + 18 + 2 + 4,
                     y + 2 + stackHeight,
                     0xFFFFFFFF,
                     false
             );
 
-            var bottomText = this.getPotionStatsText(renderable);
+            MutableText bottomText = this.getPotionStatsText(statusEffect);
 
             context.drawText(
                     textRenderer,
@@ -121,61 +112,44 @@ public class PotionTooltipComponent implements TooltipComponent {
     }
 
     private MutableText getPotionStatsText(RenderableStatusEffect effect) {
-        var text = effect.durationText().copy().append(" ");
+        MutableText text = effect.durationText().copy().append(" ");
 
-        final var attributeModifiers = Lists.<Pair<EntityAttribute, EntityAttributeModifier>>newArrayList();
-        final var map = effect.effect().getAttributeModifiers();
-        if (!map.isEmpty()) {
-            for (var entityAttributeEntityAttributeModifierEntry : map.entrySet()) {
-                final var modifier = entityAttributeEntityAttributeModifierEntry.getValue();
-                final var value = new EntityAttributeModifier(
-                        modifier.getName(),
-                        effect.effect().adjustModifierAmount(
-                                effect.level(),
-                                modifier
-                        ),
-                        modifier.getOperation()
-                );
+        Map<RegistryEntry<EntityAttribute>, List<EntityAttributeModifier>> entityAttributeModifiers = new HashMap<>();
 
-                attributeModifiers.add(new Pair<>(
-                        entityAttributeEntityAttributeModifierEntry.getKey(),
-                        value
-                ));
+        for (var entry : effect.effect().value().attributeModifiers.entrySet()) {
+            if (!entityAttributeModifiers.containsKey(entry.getKey())) {
+                entityAttributeModifiers.put(entry.getKey(), new ArrayList<>());
             }
+
+            entityAttributeModifiers.get(entry.getKey()).add(entry.getValue().createAttributeModifier(effect.amplifier()));
         }
 
-        if (!attributeModifiers.isEmpty()) {
-            for (var pair : attributeModifiers) {
-                final var entityAttributeModifier = pair.getSecond();
-                double value = entityAttributeModifier.getValue();
-                double effectiveValue;
-                if (entityAttributeModifier.getOperation() != EntityAttributeModifier.Operation.MULTIPLY_BASE
-                        && entityAttributeModifier.getOperation() != EntityAttributeModifier.Operation.MULTIPLY_TOTAL
-                ) {
-                    effectiveValue = entityAttributeModifier.getValue();
-                }
-                else {
-                    effectiveValue = entityAttributeModifier.getValue() * 100.0;
+        if (entityAttributeModifiers.isEmpty()) {
+            return text;
+        }
+
+        for (Map.Entry<RegistryEntry<EntityAttribute>, List<EntityAttributeModifier>> entry : entityAttributeModifiers.entrySet()) {
+            RegistryEntry<EntityAttribute> attribute = entry.getKey();
+            for (EntityAttributeModifier modifier : entry.getValue()) {
+                double value = modifier.value();
+                double effectiveValue = modifier.value();
+                if (modifier.operation() == EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE || modifier.operation() == EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL) {
+                    effectiveValue *= 100;
                 }
 
                 if (value > 0.0) {
-                    text.append(
-                            Text.translatable(
-                                    "attribute.modifier.plus." + entityAttributeModifier.getOperation().getId(),
-                                    ItemStack.MODIFIER_FORMAT.format(effectiveValue),
-                                    Text.translatable(pair.getFirst().getTranslationKey())
-                            ).formatted(Formatting.GREEN)
-                    );
-                }
-                else if (value < 0.0) {
+                    text.append(Text.translatable(
+                            "attribute.modifier.plus." + modifier.operation().getId(),
+                            AttributeModifiersComponent.DECIMAL_FORMAT.format(effectiveValue),
+                            Text.translatable(attribute.value().getTranslationKey())
+                    ).formatted(Formatting.BLUE));
+                } else if (value < 0.0) {
                     effectiveValue *= -1.0;
-                    text.append(
-                            Text.translatable(
-                                    "attribute.modifier.take." + entityAttributeModifier.getOperation().getId(),
-                                    ItemStack.MODIFIER_FORMAT.format(effectiveValue),
-                                    Text.translatable(pair.getFirst().getTranslationKey())
-                            ).formatted(Formatting.RED)
-                    );
+                    text.append(Text.translatable(
+                            "attribute.modifier.take." + modifier.operation().getId(),
+                            AttributeModifiersComponent.DECIMAL_FORMAT.format(effectiveValue),
+                            Text.translatable(attribute.value().getTranslationKey())
+                    ).formatted(Formatting.RED));
                 }
 
                 text = text.append(" ");
@@ -185,31 +159,19 @@ public class PotionTooltipComponent implements TooltipComponent {
         return text;
     }
 
-    private record RenderableStatusEffect(
-            StatusEffect effect,
-            Text durationText,
-            int level,
-            float chance,
-            Sprite sprite
-    ) {
-        public static RenderableStatusEffect fromInstance(
-                StatusEffectInstance instance,
-                double durationMultiplier,
-                float chance
-        ) {
-            return new RenderableStatusEffect(
-                    instance.getEffectType(),
-                    StatusEffectUtil.getDurationText(
-                            instance,
-                            (float) durationMultiplier
-                    ),
-                    instance.getAmplifier(),
-                    chance,
-                    MinecraftClient
-                            .getInstance()
-                            .getStatusEffectSpriteManager()
-                            .getSprite(instance.getEffectType())
+    private record RenderableStatusEffect(RegistryEntry<StatusEffect> effect, String nameTranslationKey, Text durationText, int amplifier, float chance) {
+        public static @Nullable RenderableStatusEffect fromInstance(StatusEffectInstance instance, double durationMultiplier, float chance) {
+            MinecraftClient client = MinecraftClient.getInstance();
+            if (client.world == null) return null;
+            float tickRate = client.world.getTickManager().getTickRate();
+
+            Text durationText = StatusEffectUtil.getDurationText(
+                    instance,
+                    (float) durationMultiplier,
+                    tickRate
             );
+
+            return new RenderableStatusEffect(instance.getEffectType(), instance.getTranslationKey(), durationText, instance.getAmplifier(), chance);
         }
     }
 }

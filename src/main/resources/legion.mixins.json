@@ -4,15 +4,9 @@
   "package": "net.rose.legion.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "item.ItemMixin",
-    "tooltip.ItemMixin",
-    "tooltip.LingeringPotionItemMixin",
-    "tooltip.PotionItemMixin",
-    "tooltip.SuspiciousStewItemMixin",
-    "tooltip.TippedArrowItemMixin"
+    "tooltip.ItemMixin"
   ],
   "client": [
-    "ChatHudMixin",
     "item.DrawContextMixin"
   ],
   "injectors": {
