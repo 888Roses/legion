@@ -2,6 +2,7 @@ package net.rose.legion.client.tooltip;
 
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
+import net.fabricmc.fabric.api.client.rendering.v1.FabricRenderPipeline;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -43,14 +44,12 @@ public class PotionTooltipComponent implements TooltipComponent {
     }
 
     @Override
-    public int getHeight() {
+    public int getHeight(TextRenderer textRenderer) {
         return (18 + 2) * this.renderableStatusEffects.length + 4 - 1;
     }
 
     @Override
-    public int getWidth(
-            TextRenderer textRenderer
-    ) {
+    public int getWidth(TextRenderer textRenderer) {
         var width = 18 + 2 + 4;
 
         return width + Math.max(
@@ -83,22 +82,18 @@ public class PotionTooltipComponent implements TooltipComponent {
     }
 
     @Override
-    public void drawItems(
-            TextRenderer textRenderer,
-            int x,
-            int y,
-            DrawContext context
-    ) {
+    public void drawItems(TextRenderer textRenderer, int x, int y, int width, int height, DrawContext context) {
         var stackHeight = -1;
 
         for (var renderable : this.renderableStatusEffects) {
             context.drawSprite(
+                    context,
+                    renderable.sprite(),
                     x + 2,
                     y + 2 + stackHeight,
                     0,
                     18,
-                    18,
-                    renderable.sprite()
+                    18
             );
 
             context.drawText(

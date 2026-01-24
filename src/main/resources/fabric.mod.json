@@ -4,7 +4,7 @@
   "version": "${version}",
   "name": "legion",
   "description": "",
-  "authors": [],
+  "authors": ["Rosenoire", "Elysieon"],
   "contact": {},
   "license": "All-Rights-Reserved",
   "icon": "assets/legion/icon.png",
