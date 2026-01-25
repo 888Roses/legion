@@ -13,8 +13,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class WolfArmorTooltipPreviewHandler implements ArmorTooltipPreviewHandler{
     @Override
-    public boolean validate(ArmorTooltipComponent component, EquipmentSlot slot) {
-        return component.data().itemStack().isOf(Items.WOLF_ARMOR);
+    public boolean validate(ItemStack itemStack, EquipmentSlot slot) {
+        return itemStack.isOf(Items.WOLF_ARMOR);
     }
 
     @Override

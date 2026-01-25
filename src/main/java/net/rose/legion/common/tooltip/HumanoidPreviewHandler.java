@@ -7,12 +7,13 @@ import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.item.ItemStack;
 import net.rose.legion.client.tooltip.ArmorTooltipComponent;
 import org.jetbrains.annotations.Nullable;
 
 public class HumanoidPreviewHandler implements ArmorTooltipPreviewHandler {
     @Override
-    public boolean validate(ArmorTooltipComponent component, EquipmentSlot slot) {
+    public boolean validate(ItemStack itemStack, EquipmentSlot slot) {
         return slot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR || slot == EquipmentSlot.OFFHAND;
     }
 
@@ -54,6 +55,8 @@ public class HumanoidPreviewHandler implements ArmorTooltipPreviewHandler {
             }
 
             playerEntityRenderState.skinTextures = clientPlayer.getSkin();
+            playerEntityRenderState.bodyYaw = 0;
+            playerEntityRenderState.relativeHeadYaw = 0;
         }
     }
 }

@@ -5,13 +5,16 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ConsumableComponent;
 import net.minecraft.component.type.EquippableComponent;
 import net.minecraft.component.type.SuspiciousStewEffectsComponent;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.*;
 import net.minecraft.item.consume.ApplyEffectsConsumeEffect;
 import net.minecraft.item.consume.ConsumeEffect;
 import net.minecraft.item.tooltip.TooltipData;
+import net.rose.legion.client.tooltip.ArmorTooltipComponent;
 import net.rose.legion.common.tooltip.ArmorTooltipData;
+import net.rose.legion.common.tooltip.ArmorTooltipPreviewHandler;
 import net.rose.legion.common.tooltip.PotionTooltipData;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -74,9 +77,7 @@ public class ItemMixin {
             )));
         }
 
-        EquippableComponent equippableComponent = itemStack.get(DataComponentTypes.EQUIPPABLE);
-        if (equippableComponent != null) {
-            cir.setReturnValue(Optional.of(new ArmorTooltipData(itemStack)));
-        }
+        ArmorTooltipPreviewHandler armorTooltipPreviewHandler = ArmorTooltipComponent.getTooltipPreviewHandler(itemStack);
+        if (armorTooltipPreviewHandler != null) cir.setReturnValue(Optional.of(new ArmorTooltipData(itemStack)));
     }
 }

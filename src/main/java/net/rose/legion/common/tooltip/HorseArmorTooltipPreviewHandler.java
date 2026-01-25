@@ -13,8 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class HorseArmorTooltipPreviewHandler implements ArmorTooltipPreviewHandler{
     @Override
-    public boolean validate(ArmorTooltipComponent component, EquipmentSlot slot) {
-        ItemStack itemStack = component.data().itemStack();
+    public boolean validate(ItemStack itemStack, EquipmentSlot slot) {
         return itemStack.isOf(Items.SADDLE)
                 || itemStack.isOf(Items.LEATHER_HORSE_ARMOR)
                 || itemStack.isOf(Items.COPPER_HORSE_ARMOR)

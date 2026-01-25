@@ -21,11 +21,12 @@ public class Legion implements ModInitializer {
         LOGGER.info("Initializing mod Legion!");
         LOGGER.info("Thanks for using my mod <3 - Rosenoire");
 
-        ArmorTooltipComponent.registerPreviewHandler(new HumanoidPreviewHandler());
+        ArmorTooltipComponent.registerPreviewHandler(new ArmorTrimTooltipPreviewHandler());
         ArmorTooltipComponent.registerPreviewHandler(new HarnessTooltipPreviewHandler());
         ArmorTooltipComponent.registerPreviewHandler(new HorseArmorTooltipPreviewHandler());
         ArmorTooltipComponent.registerPreviewHandler(new NautilusArmorTooltipPreviewHandler());
         ArmorTooltipComponent.registerPreviewHandler(new WolfArmorTooltipPreviewHandler());
+        ArmorTooltipComponent.registerPreviewHandler(new HumanoidPreviewHandler());
 
         Geode.setHookedMod(MOD_ID);
     }
