@@ -11,10 +11,18 @@ import net.minecraft.item.ItemStack;
 import net.rose.legion.client.tooltip.ArmorTooltipComponent;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
+
 public class HumanoidPreviewHandler implements ArmorTooltipPreviewHandler {
     @Override
-    public boolean validate(ItemStack itemStack, EquipmentSlot slot) {
+    public boolean validate(ItemStack itemStack, @Nullable EquipmentSlot slot) {
+        if (slot == null) return false;
         return slot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR || slot == EquipmentSlot.OFFHAND;
+    }
+
+    @Override
+    public Optional<Integer> getHeight(ArmorTooltipComponent component, EquipmentSlot slot) {
+        return slot == EquipmentSlot.OFFHAND ? Optional.of(38) : ArmorTooltipPreviewHandler.super.getHeight(component, slot);
     }
 
     @Override

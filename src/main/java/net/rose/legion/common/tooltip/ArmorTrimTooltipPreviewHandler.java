@@ -19,7 +19,9 @@ import net.minecraft.registry.*;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.World;
 import net.rose.legion.client.tooltip.ArmorTooltipComponent;
 import net.rose.legion.common.Legion;
 import org.jetbrains.annotations.Nullable;
@@ -30,8 +32,14 @@ public class ArmorTrimTooltipPreviewHandler implements ArmorTooltipPreviewHandle
     public static final int SWAP_SPEED = 40;
 
     @Override
-    public boolean validate(ItemStack itemStack, EquipmentSlot slot) {
+    public boolean validate(ItemStack itemStack, @Nullable EquipmentSlot slot) {
+        if (slot != null) return false;
         return itemStack.getItem() instanceof SmithingTemplateItem;
+    }
+
+    @Override
+    public Optional<Integer> getHeight(ArmorTooltipComponent component, EquipmentSlot slot) {
+        return Optional.of(48);
     }
 
     @Override
@@ -44,55 +52,49 @@ public class ArmorTrimTooltipPreviewHandler implements ArmorTooltipPreviewHandle
         }
 
         ClientMannequinEntity livingEntity = new ClientMannequinEntity(world, client.getPlayerSkinCache());
-        ItemStack itemStack = component.data().itemStack();
-        if (itemStack.getItem() instanceof SmithingTemplateItem && !itemStack.isOf(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE)) {
-
-
-            Optional<RegistryEntryList.Named<Item>> headArmors = Registries.ITEM.getOptional(ItemTags.HEAD_ARMOR);
-            if (headArmors.isPresent()) {
-                RegistryEntryList.Named<Item> tagContent = headArmors.get();
-                int index = (int) (world.getTime() / SWAP_SPEED % tagContent.size());
-                RegistryEntry<Item> item = tagContent.get(index);
-                ItemStack equipmentStack = new ItemStack(item);
-                equipmentStack.set(DataComponentTypes.TRIM, getRandomMaterialTrim(world, itemStack, 0));
-                livingEntity.equipStack(EquipmentSlot.HEAD, equipmentStack);
+        ItemStack armorTrimStack = component.data().itemStack();
+        if (armorTrimStack.getItem() instanceof SmithingTemplateItem) {
+            if (armorTrimStack.isOf(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE)) {
+                return null;
             }
 
-            Optional<RegistryEntryList.Named<Item>> chestArmor = Registries.ITEM.getOptional(ItemTags.CHEST_ARMOR);
-            if (chestArmor.isPresent()) {
-                RegistryEntryList.Named<Item> tagContent = chestArmor.get();
-                int index = (int) ((world.getTime() / SWAP_SPEED + 1) % tagContent.size());
-                RegistryEntry<Item> item = tagContent.get(index);
-                ItemStack equipmentStack = new ItemStack(item);
-                equipmentStack.set(DataComponentTypes.TRIM, getRandomMaterialTrim(world, itemStack, 1));
-                livingEntity.equipStack(EquipmentSlot.CHEST, equipmentStack);
-            }
+            getRandomItemInTag(world, ItemTags.HEAD_ARMOR, 0).ifPresent(itemStack -> {
+                itemStack.set(DataComponentTypes.TRIM, getRandomMaterialTrim(world, armorTrimStack, 0));
+                livingEntity.equipStack(EquipmentSlot.HEAD, itemStack);
+            });
 
-            Optional<RegistryEntryList.Named<Item>> legArmor = Registries.ITEM.getOptional(ItemTags.LEG_ARMOR);
-            if (legArmor.isPresent()) {
-                RegistryEntryList.Named<Item> tagContent = legArmor.get();
-                int index = (int) ((world.getTime() / SWAP_SPEED + 2) % tagContent.size());
-                RegistryEntry<Item> item = tagContent.get(index);
-                ItemStack equipmentStack = new ItemStack(item);
-                equipmentStack.set(DataComponentTypes.TRIM, getRandomMaterialTrim(world, itemStack, 2));
-                livingEntity.equipStack(EquipmentSlot.LEGS, equipmentStack);
-            }
+            getRandomItemInTag(world, ItemTags.CHEST_ARMOR, 1).ifPresent(itemStack -> {
+                itemStack.set(DataComponentTypes.TRIM, getRandomMaterialTrim(world, armorTrimStack, 1));
+                livingEntity.equipStack(EquipmentSlot.CHEST, itemStack);
+            });
 
-            Optional<RegistryEntryList.Named<Item>> footArmor = Registries.ITEM.getOptional(ItemTags.FOOT_ARMOR);
-            if (footArmor.isPresent()) {
-                RegistryEntryList.Named<Item> tagContent = footArmor.get();
-                int index = (int) ((world.getTime() / SWAP_SPEED + 3) % tagContent.size());
-                RegistryEntry<Item> item = tagContent.get(index);
-                ItemStack equipmentStack = new ItemStack(item);
-                equipmentStack.set(DataComponentTypes.TRIM, getRandomMaterialTrim(world, itemStack, 3));
-                livingEntity.equipStack(EquipmentSlot.FEET, equipmentStack);
-            }
+            getRandomItemInTag(world, ItemTags.LEG_ARMOR, 2).ifPresent(itemStack -> {
+                itemStack.set(DataComponentTypes.TRIM, getRandomMaterialTrim(world, armorTrimStack, 2));
+                livingEntity.equipStack(EquipmentSlot.LEGS, itemStack);
+            });
+
+            getRandomItemInTag(world, ItemTags.FOOT_ARMOR, 3).ifPresent(itemStack -> {
+                itemStack.set(DataComponentTypes.TRIM, getRandomMaterialTrim(world, armorTrimStack, 3));
+                livingEntity.equipStack(EquipmentSlot.FEET, itemStack);
+            });
         }
 
         float scale = 32f;
         float verticalOffset = 0.8f;
 
         return new ArmorTooltipComponent.EntityInfo(livingEntity, scale, verticalOffset);
+    }
+
+    private static Optional<ItemStack> getRandomItemInTag(World world, TagKey<Item> tag, int equipmentOffset) {
+        Optional<RegistryEntryList.Named<Item>> headArmors = Registries.ITEM.getOptional(tag);
+        if (headArmors.isPresent()) {
+            RegistryEntryList.Named<Item> tagContent = headArmors.get();
+            int index = (int) ((world.getTime() / SWAP_SPEED + equipmentOffset) % tagContent.size());
+            RegistryEntry<Item> item = tagContent.get(index);
+            return Optional.of(new ItemStack(item));
+        }
+
+        return Optional.empty();
     }
 
     private static @Nullable ArmorTrim getRandomMaterialTrim(ClientWorld world, ItemStack itemStack, int materialOffset) {
@@ -126,11 +128,6 @@ public class ArmorTrimTooltipPreviewHandler implements ArmorTooltipPreviewHandle
         }
 
         return null;
-    }
-
-    @Override
-    public Optional<Integer> getHeight(ArmorTooltipComponent component, EquipmentSlot slot) {
-        return Optional.of(48);
     }
 
     /// Modifies the given [EntityRenderState] to make sure the [PlayerEntityRenderState#bodyYaw] and

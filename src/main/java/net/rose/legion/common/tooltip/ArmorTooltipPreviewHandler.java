@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 public interface ArmorTooltipPreviewHandler {
-    boolean validate(ItemStack itemStack, EquipmentSlot slot);
+    boolean validate(ItemStack itemStack, @Nullable EquipmentSlot slot);
 
     @Nullable ArmorTooltipComponent.EntityInfo getEntityInfo(ArmorTooltipComponent component, EquipmentSlot slot);
 

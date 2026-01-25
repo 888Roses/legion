@@ -31,7 +31,7 @@ import java.util.List;
 
 public record ArmorTooltipComponent(ArmorTooltipData data) implements TooltipComponent {
     private static final List<ArmorTooltipPreviewHandler> PREVIEW_HANDLERS = new ArrayList<>();
-    public static final EquipmentSlot BASE_EQUIPMENT_SLOT = EquipmentSlot.HEAD;
+    public static final EquipmentSlot BASE_EQUIPMENT_SLOT = null;
     private static final int BASE_HEIGHT = 32;
 
     public static void registerPreviewHandler(ArmorTooltipPreviewHandler handler) {

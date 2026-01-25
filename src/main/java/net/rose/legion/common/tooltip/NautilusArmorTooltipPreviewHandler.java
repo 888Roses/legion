@@ -13,7 +13,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class NautilusArmorTooltipPreviewHandler implements ArmorTooltipPreviewHandler {
     @Override
-    public boolean validate(ItemStack itemStack, EquipmentSlot slot) {
+    public boolean validate(ItemStack itemStack, @Nullable EquipmentSlot slot) {
+        if (slot == null) return false;
         return itemStack.isOf(Items.COPPER_NAUTILUS_ARMOR)
                 || itemStack.isOf(Items.IRON_NAUTILUS_ARMOR)
                 || itemStack.isOf(Items.GOLDEN_NAUTILUS_ARMOR)

@@ -12,7 +12,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class HarnessTooltipPreviewHandler implements ArmorTooltipPreviewHandler {
     @Override
-    public boolean validate(ItemStack itemStack, EquipmentSlot slot) {
+    public boolean validate(ItemStack itemStack, @Nullable EquipmentSlot slot) {
+        if (slot == null) return false;
         return itemStack.isIn(ItemTags.HARNESSES);
     }
 
