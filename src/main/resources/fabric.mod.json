@@ -11,13 +11,13 @@
   "environment": "*",
   "entrypoints": {
     "fabric-datagen": [
-      "net.rose.legion.data.LegionDataGenerator"
+      "dev.rosenoire.legion.data.LegionDataGenerator"
     ],
     "client": [
-      "net.rose.legion.client.LegionClient"
+      "dev.rosenoire.legion.client.LegionClient"
     ],
     "main": [
-      "net.rose.legion.common.Legion"
+      "dev.rosenoire.legion.common.Legion"
     ]
   },
   "mixins": [
