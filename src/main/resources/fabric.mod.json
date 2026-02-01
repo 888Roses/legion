@@ -10,14 +10,8 @@
   "icon": "assets/legion/icon.png",
   "environment": "*",
   "entrypoints": {
-    "fabric-datagen": [
-      "dev.rosenoire.legion.data.LegionDataGenerator"
-    ],
     "client": [
-      "dev.rosenoire.legion.client.LegionClient"
-    ],
-    "main": [
-      "dev.rosenoire.legion.common.Legion"
+      "dev.rosenoire.legion.client.Legion"
     ]
   },
   "mixins": [

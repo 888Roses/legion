@@ -16,7 +16,6 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import dev.rosenoire.legion.common.tooltip.PotionTooltipData;
 import dev.rosenoire.legion.fundation.util.RomanNumber;
 import org.jetbrains.annotations.Nullable;
 

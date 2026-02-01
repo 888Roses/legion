@@ -1,20 +1,26 @@
-package dev.rosenoire.legion.common.tooltip;
+package dev.rosenoire.legion.client.tooltip;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.passive.HappyGhastEntity;
+import net.minecraft.entity.passive.NautilusEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.tag.ItemTags;
-import dev.rosenoire.legion.client.tooltip.ArmorTooltipComponent;
+import net.minecraft.item.Items;
 import org.jetbrains.annotations.Nullable;
 
-public class HarnessTooltipPreviewHandler implements ArmorTooltipPreviewHandler {
+public class NautilusArmorTooltipPreviewHandler implements ArmorTooltipPreviewHandler {
     @Override
     public boolean validate(ItemStack itemStack, @Nullable EquipmentSlot slot) {
-        if (slot == null) return false;
-        return itemStack.isIn(ItemTags.HARNESSES);
+        if (slot == null) {
+            return false;
+        }
+
+        return itemStack.isOf(Items.COPPER_NAUTILUS_ARMOR)
+                || itemStack.isOf(Items.IRON_NAUTILUS_ARMOR)
+                || itemStack.isOf(Items.GOLDEN_NAUTILUS_ARMOR)
+                || itemStack.isOf(Items.DIAMOND_NAUTILUS_ARMOR)
+                || itemStack.isOf(Items.NETHERITE_NAUTILUS_ARMOR);
     }
 
     @Override
@@ -27,9 +33,9 @@ public class HarnessTooltipPreviewHandler implements ArmorTooltipPreviewHandler 
         }
 
         ItemStack itemStack = component.data().itemStack();
-        HappyGhastEntity entity = new HappyGhastEntity(EntityType.HAPPY_GHAST, world);
+        NautilusEntity entity = new NautilusEntity(EntityType.NAUTILUS, world);
         entity.equipStack(slot, itemStack);
 
-        return new ArmorTooltipComponent.EntityInfo(entity, 6, 1f);
+        return new ArmorTooltipComponent.EntityInfo(entity, 20, 0.5f);
     }
 }

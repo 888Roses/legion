@@ -1,24 +1,22 @@
-package dev.rosenoire.legion.common.tooltip;
+package dev.rosenoire.legion.client.tooltip;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.passive.NautilusEntity;
+import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import dev.rosenoire.legion.client.tooltip.ArmorTooltipComponent;
 import org.jetbrains.annotations.Nullable;
 
-public class NautilusArmorTooltipPreviewHandler implements ArmorTooltipPreviewHandler {
+public class WolfArmorTooltipPreviewHandler implements ArmorTooltipPreviewHandler{
     @Override
     public boolean validate(ItemStack itemStack, @Nullable EquipmentSlot slot) {
-        if (slot == null) return false;
-        return itemStack.isOf(Items.COPPER_NAUTILUS_ARMOR)
-                || itemStack.isOf(Items.IRON_NAUTILUS_ARMOR)
-                || itemStack.isOf(Items.GOLDEN_NAUTILUS_ARMOR)
-                || itemStack.isOf(Items.DIAMOND_NAUTILUS_ARMOR)
-                || itemStack.isOf(Items.NETHERITE_NAUTILUS_ARMOR);
+        if (slot == null) {
+            return false;
+        }
+
+        return itemStack.isOf(Items.WOLF_ARMOR);
     }
 
     @Override
@@ -31,9 +29,9 @@ public class NautilusArmorTooltipPreviewHandler implements ArmorTooltipPreviewHa
         }
 
         ItemStack itemStack = component.data().itemStack();
-        NautilusEntity entity = new NautilusEntity(EntityType.NAUTILUS, world);
+        WolfEntity entity = new WolfEntity(EntityType.WOLF, world);
         entity.equipStack(slot, itemStack);
 
-        return new ArmorTooltipComponent.EntityInfo(entity, 20, 0.5f);
+        return new ArmorTooltipComponent.EntityInfo(entity, 28, 0.5f);
     }
 }

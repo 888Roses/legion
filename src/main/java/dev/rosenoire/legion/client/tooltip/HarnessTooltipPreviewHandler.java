@@ -1,20 +1,19 @@
-package dev.rosenoire.legion.common.tooltip;
+package dev.rosenoire.legion.client.tooltip;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.passive.WolfEntity;
+import net.minecraft.entity.passive.HappyGhastEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import dev.rosenoire.legion.client.tooltip.ArmorTooltipComponent;
+import net.minecraft.registry.tag.ItemTags;
 import org.jetbrains.annotations.Nullable;
 
-public class WolfArmorTooltipPreviewHandler implements ArmorTooltipPreviewHandler{
+public class HarnessTooltipPreviewHandler implements ArmorTooltipPreviewHandler {
     @Override
     public boolean validate(ItemStack itemStack, @Nullable EquipmentSlot slot) {
         if (slot == null) return false;
-        return itemStack.isOf(Items.WOLF_ARMOR);
+        return itemStack.isIn(ItemTags.HARNESSES);
     }
 
     @Override
@@ -27,9 +26,9 @@ public class WolfArmorTooltipPreviewHandler implements ArmorTooltipPreviewHandle
         }
 
         ItemStack itemStack = component.data().itemStack();
-        WolfEntity entity = new WolfEntity(EntityType.WOLF, world);
+        HappyGhastEntity entity = new HappyGhastEntity(EntityType.HAPPY_GHAST, world);
         entity.equipStack(slot, itemStack);
 
-        return new ArmorTooltipComponent.EntityInfo(entity, 28, 0.5f);
+        return new ArmorTooltipComponent.EntityInfo(entity, 6, 1f);
     }
 }

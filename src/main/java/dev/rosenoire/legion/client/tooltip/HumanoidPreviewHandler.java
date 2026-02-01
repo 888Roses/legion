@@ -1,4 +1,4 @@
-package dev.rosenoire.legion.common.tooltip;
+package dev.rosenoire.legion.client.tooltip;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientMannequinEntity;
@@ -8,7 +8,6 @@ import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
-import dev.rosenoire.legion.client.tooltip.ArmorTooltipComponent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;

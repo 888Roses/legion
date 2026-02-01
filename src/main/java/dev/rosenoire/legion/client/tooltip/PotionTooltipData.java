@@ -1,4 +1,4 @@
-package dev.rosenoire.legion.common.tooltip;
+package dev.rosenoire.legion.client.tooltip;
 
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.PotionContentsComponent;
@@ -19,22 +19,22 @@ public class PotionTooltipData implements TooltipData {
         this.durationMultiplier = durationMultiplier;
 
         chances = new ArrayList<>(effects.size());
-        for (int i = 0; i < effects.size(); i++) chances.add(i, 1F);
+        for (int i = 0; i < effects.size(); i++) {
+            chances.add(i, 1F);
+        }
     }
 
     public PotionTooltipData(ItemStack stack, double durationMultiplier) {
         this(new ArrayList<>(), durationMultiplier);
         PotionContentsComponent component = stack.get(DataComponentTypes.POTION_CONTENTS);
-        if (component != null) component.forEachEffect(effects::add, 1);
+        if (component != null) {
+            component.forEachEffect(effects::add, 1);
+        }
     }
 
     public PotionTooltipData withChances(List<Float> chances) {
         this.chances = chances;
         return this;
-    }
-
-    public List<Float> getChances() {
-        return this.chances;
     }
 
     public double getDurationMultiplier() {

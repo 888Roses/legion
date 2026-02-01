@@ -1,9 +1,8 @@
-package dev.rosenoire.legion.common.tooltip;
+package dev.rosenoire.legion.client.tooltip;
 
 import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
-import dev.rosenoire.legion.client.tooltip.ArmorTooltipComponent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;

@@ -1,8 +1,8 @@
 package dev.rosenoire.legion.client.tooltip;
 
-import net.collectively.geode.core.math;
-import net.collectively.geode.core.types.double3;
-import net.collectively.geode.mc.util.RenderHelper;
+import net.collectively.geode.helpers.RenderHelper;
+import net.collectively.geode.math.math;
+import net.collectively.geode.types.double3;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -18,8 +18,6 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import dev.rosenoire.legion.common.tooltip.ArmorTooltipData;
-import dev.rosenoire.legion.common.tooltip.ArmorTooltipPreviewHandler;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;

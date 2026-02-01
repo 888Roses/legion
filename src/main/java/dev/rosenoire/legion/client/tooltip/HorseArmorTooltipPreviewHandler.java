@@ -1,4 +1,4 @@
-package dev.rosenoire.legion.common.tooltip;
+package dev.rosenoire.legion.client.tooltip;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
@@ -7,7 +7,6 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import dev.rosenoire.legion.client.tooltip.ArmorTooltipComponent;
 import org.jetbrains.annotations.Nullable;
 
 public class HorseArmorTooltipPreviewHandler implements ArmorTooltipPreviewHandler{

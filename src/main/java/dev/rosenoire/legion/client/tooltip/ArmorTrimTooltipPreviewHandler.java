@@ -1,5 +1,6 @@
-package dev.rosenoire.legion.common.tooltip;
+package dev.rosenoire.legion.client.tooltip;
 
+import dev.rosenoire.legion.client.Legion;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientMannequinEntity;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -22,8 +23,6 @@ import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
-import dev.rosenoire.legion.client.tooltip.ArmorTooltipComponent;
-import dev.rosenoire.legion.common.Legion;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
