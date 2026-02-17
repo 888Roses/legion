@@ -1,6 +1,7 @@
 package dev.rosenoire.legion.mixin;
 
 import com.google.common.collect.ImmutableList;
+import dev.rosenoire.legion.client.config.LegionConfig;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ConsumableComponent;
 import net.minecraft.component.type.SuspiciousStewEffectsComponent;
@@ -34,14 +35,16 @@ public class ItemMixin {
             )));
         }
 
-        SuspiciousStewEffectsComponent suspiciousStewComponent = itemStack.get(DataComponentTypes.SUSPICIOUS_STEW_EFFECTS);
-        if (suspiciousStewComponent != null) {
-            List<StatusEffectInstance> stewEffects = suspiciousStewComponent.effects()
-                    .stream()
-                    .map(SuspiciousStewEffectsComponent.StewEffect::createStatusEffectInstance)
-                    .toList();
+        if (LegionConfig.showSuspiciousStewInfo) {
+            SuspiciousStewEffectsComponent suspiciousStewComponent = itemStack.get(DataComponentTypes.SUSPICIOUS_STEW_EFFECTS);
+            if (suspiciousStewComponent != null) {
+                List<StatusEffectInstance> stewEffects = suspiciousStewComponent.effects()
+                        .stream()
+                        .map(SuspiciousStewEffectsComponent.StewEffect::createStatusEffectInstance)
+                        .toList();
 
-            cir.setReturnValue(Optional.of(new PotionTooltipData(stewEffects, 1)));
+                cir.setReturnValue(Optional.of(new PotionTooltipData(stewEffects, 1)));
+            }
         }
 
         ConsumableComponent consumableComponent = itemStack.get(DataComponentTypes.CONSUMABLE);

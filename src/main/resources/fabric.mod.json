@@ -2,13 +2,16 @@
   "schemaVersion": 1,
   "id": "legion",
   "version": "${version}",
-  "name": "legion",
-  "description": "",
+  "name": "Legion",
+  "description": "Enhances the base Minecraft tooltips to show potion attributes, armor & trim previews and more! ",
   "authors": ["Rosenoire", "Elysieon"],
-  "contact": {},
+  "contact": {
+    "discord": "https://discord.com/invite/kTz6gjMWEr",
+    "sources": "https://github.com/888Roses/Legion"
+  },
   "license": "All-Rights-Reserved",
   "icon": "assets/legion/icon.png",
-  "environment": "*",
+  "environment": "client",
   "entrypoints": {
     "client": [
       "dev.rosenoire.legion.client.Legion"

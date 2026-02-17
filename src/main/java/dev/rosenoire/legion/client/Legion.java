@@ -1,6 +1,8 @@
 package dev.rosenoire.legion.client;
 
+import dev.rosenoire.legion.client.config.LegionConfig;
 import dev.rosenoire.legion.client.tooltip.*;
+import eu.midnightdust.lib.config.MidnightConfig;
 import net.collectively.geode.GeodeClient;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.TooltipComponentCallback;
@@ -19,6 +21,7 @@ public class Legion implements ClientModInitializer {
     public void onInitializeClient() {
         LOGGER.info("Initializing mod Legion!");
         LOGGER.info("Thanks for using my mod <3 - Rosenoire");
+        LOGGER.info("Logger above likes women ^");
 
         ArmorTooltipComponent.registerPreviewHandler(new ArmorTrimTooltipPreviewHandler());
         ArmorTooltipComponent.registerPreviewHandler(new HarnessTooltipPreviewHandler());
@@ -29,5 +32,8 @@ public class Legion implements ClientModInitializer {
 
         TooltipComponentCallback.EVENT.register(new PotionTooltipComponentCallback());
         TooltipComponentCallback.EVENT.register(new ArmorTooltipComponentCallback());
+
+        MidnightConfig.init("legion", LegionConfig.class);
+
     }
 }
