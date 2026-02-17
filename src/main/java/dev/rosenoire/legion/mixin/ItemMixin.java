@@ -28,57 +28,75 @@ import java.util.Optional;
 public class ItemMixin {
     @Inject(method = "getTooltipData", at = @At("TAIL"), cancellable = true)
     private void legion$getTooltipData(ItemStack itemStack, CallbackInfoReturnable<Optional<TooltipData>> cir) {
-        if (itemStack.getItem() instanceof PotionItem || itemStack.getItem() instanceof TippedArrowItem) {
-            cir.setReturnValue(Optional.of(new PotionTooltipData(
-                    itemStack,
-                    itemStack.getItem() instanceof TippedArrowItem ? 0.125 : 1
-            )));
-        }
-
-        if (LegionConfig.showSuspiciousStewInfo) {
-            SuspiciousStewEffectsComponent suspiciousStewComponent = itemStack.get(DataComponentTypes.SUSPICIOUS_STEW_EFFECTS);
-            if (suspiciousStewComponent != null) {
-                List<StatusEffectInstance> stewEffects = suspiciousStewComponent.effects()
-                        .stream()
-                        .map(SuspiciousStewEffectsComponent.StewEffect::createStatusEffectInstance)
-                        .toList();
-
-                cir.setReturnValue(Optional.of(new PotionTooltipData(stewEffects, 1)));
+        if (LegionConfig.modEnabled) {
+            // Tipped Arrows
+            if (LegionConfig.showTippedArrowInfo) {
+                if (itemStack.getItem() instanceof PotionItem || itemStack.getItem() instanceof TippedArrowItem) {
+                    cir.setReturnValue(Optional.of(new PotionTooltipData(
+                            itemStack,
+                            itemStack.getItem() instanceof TippedArrowItem ? 0.125 : 1
+                    )));
+                }
             }
-        }
 
-        ConsumableComponent consumableComponent = itemStack.get(DataComponentTypes.CONSUMABLE);
-        if (consumableComponent != null) {
-            List<ConsumeEffect> consumeEffects = consumableComponent.onConsumeEffects();
-            if (consumeEffects != null && !consumeEffects.isEmpty()) {
-                List<StatusEffectInstance> statusEffectInstances = new ArrayList<>();
-                List<Float> chances = new ArrayList<>();
+            // Suspicious Stew
+            if (LegionConfig.showSuspiciousStewInfo) {
+                SuspiciousStewEffectsComponent suspiciousStewComponent = itemStack.get(DataComponentTypes.SUSPICIOUS_STEW_EFFECTS);
+                if (suspiciousStewComponent != null) {
+                    List<StatusEffectInstance> stewEffects = suspiciousStewComponent.effects()
+                            .stream()
+                            .map(SuspiciousStewEffectsComponent.StewEffect::createStatusEffectInstance)
+                            .toList();
 
-                for (ConsumeEffect consumeEffect : consumeEffects) {
-                    if (consumeEffect instanceof ApplyEffectsConsumeEffect(List<StatusEffectInstance> effects, float probability)) {
-                        effects.forEach(x -> {
-                            statusEffectInstances.add(x);
-                            chances.add(probability);
-                        });
+                    cir.setReturnValue(Optional.of(new PotionTooltipData(stewEffects, 1)));
+                }
+            }
+
+            // Consumables
+            if (LegionConfig.showPotionInfo) {
+                ConsumableComponent consumableComponent = itemStack.get(DataComponentTypes.CONSUMABLE);
+                if (consumableComponent != null) {
+                    List<ConsumeEffect> consumeEffects = consumableComponent.onConsumeEffects();
+                    if (consumeEffects != null && !consumeEffects.isEmpty()) {
+                        List<StatusEffectInstance> statusEffectInstances = new ArrayList<>();
+                        List<Float> chances = new ArrayList<>();
+
+                        for (ConsumeEffect consumeEffect : consumeEffects) {
+                            if (consumeEffect instanceof ApplyEffectsConsumeEffect(
+                                    List<StatusEffectInstance> effects, float probability
+                            )) {
+                                effects.forEach(x -> {
+                                    statusEffectInstances.add(x);
+                                    chances.add(probability);
+                                });
+                            }
+                        }
+
+                        cir.setReturnValue(Optional.of(new PotionTooltipData(statusEffectInstances, 1).withChances(chances)));
                     }
                 }
+            }
 
-                cir.setReturnValue(Optional.of(new PotionTooltipData(statusEffectInstances, 1).withChances(chances)));
+            // Totem of Undying
+            if (LegionConfig.showTotemInfo) {
+                if (itemStack.isOf(Items.TOTEM_OF_UNDYING)) {
+                    cir.setReturnValue(Optional.of(new PotionTooltipData(
+                            ImmutableList.<StatusEffectInstance>builder()
+                                    .add(new StatusEffectInstance(StatusEffects.REGENERATION, 900, 1))
+                                    .add(new StatusEffectInstance(StatusEffects.ABSORPTION, 100, 1))
+                                    .add(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 800, 0))
+                                    .build(),
+                            1
+                    )));
+                }
+            }
+
+            // Armor Preview
+            if (LegionConfig.showArmorInfo) {
+                ArmorTooltipPreviewHandler armorTooltipPreviewHandler = ArmorTooltipComponent.getTooltipPreviewHandler(itemStack);
+                if (armorTooltipPreviewHandler != null)
+                    cir.setReturnValue(Optional.of(new ArmorTooltipData(itemStack)));
             }
         }
-
-        if (itemStack.isOf(Items.TOTEM_OF_UNDYING)) {
-            cir.setReturnValue(Optional.of(new PotionTooltipData(
-                    ImmutableList.<StatusEffectInstance>builder()
-                            .add(new StatusEffectInstance(StatusEffects.REGENERATION, 900, 1))
-                            .add(new StatusEffectInstance(StatusEffects.ABSORPTION, 100, 1))
-                            .add(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 800, 0))
-                            .build(),
-                    1
-            )));
-        }
-
-        ArmorTooltipPreviewHandler armorTooltipPreviewHandler = ArmorTooltipComponent.getTooltipPreviewHandler(itemStack);
-        if (armorTooltipPreviewHandler != null) cir.setReturnValue(Optional.of(new ArmorTooltipData(itemStack)));
     }
 }

@@ -1,5 +1,15 @@
 {
   "legion.midnightconfig.title":"Legion Config",
 
+  "legion.midnightconfig.category.normal":"Client",
+  "legion.midnightconfig.category.warning": "Illegal",
+
+  "legion.midnightconfig.modEnabled":"Legion Enabled",
+
+  "legion.midnightconfig.showPotionInfo":"Show Potion Information",
+  "legion.midnightconfig.showTippedArrowInfo":"Show Tipped Arrow Information",
+  "legion.midnightconfig.showTrimInfo":"Show Trim Information",
+  "legion.midnightconfig.showTotemInfo":"Show Totem of Undying Information",
+  "legion.midnightconfig.showArmorInfo":"Show Armor Information",
   "legion.midnightconfig.showSuspiciousStewInfo":"Show Suspicious Stew Information"
 }
