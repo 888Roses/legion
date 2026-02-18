@@ -29,14 +29,12 @@ public class ItemMixin {
     @Inject(method = "getTooltipData", at = @At("TAIL"), cancellable = true)
     private void legion$getTooltipData(ItemStack itemStack, CallbackInfoReturnable<Optional<TooltipData>> cir) {
         if (LegionConfig.modEnabled) {
-            // Tipped Arrows
-            if (LegionConfig.showTippedArrowInfo) {
-                if (itemStack.getItem() instanceof PotionItem || itemStack.getItem() instanceof TippedArrowItem) {
-                    cir.setReturnValue(Optional.of(new PotionTooltipData(
-                            itemStack,
-                            itemStack.getItem() instanceof TippedArrowItem ? 0.125 : 1
-                    )));
-                }
+            // Potion and Arrows
+            if (itemStack.getItem() instanceof PotionItem && LegionConfig.showPotionInfo || itemStack.getItem() instanceof TippedArrowItem && LegionConfig.showTippedArrowInfo) {
+                cir.setReturnValue(Optional.of(new PotionTooltipData(
+                        itemStack,
+                        itemStack.getItem() instanceof TippedArrowItem ? 0.125 : 1
+                )));
             }
 
             // Suspicious Stew
@@ -53,7 +51,7 @@ public class ItemMixin {
             }
 
             // Consumables
-            if (LegionConfig.showPotionInfo) {
+            if (LegionConfig.showConsumableInfo) {
                 ConsumableComponent consumableComponent = itemStack.get(DataComponentTypes.CONSUMABLE);
                 if (consumableComponent != null) {
                     List<ConsumeEffect> consumeEffects = consumableComponent.onConsumeEffects();

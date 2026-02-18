@@ -13,6 +13,7 @@ public class LegionConfig extends MidnightConfig {
     @Comment(category = NORMAL, name= "Configuration", centered = true)
     public static Comment comment1;
     @Entry(category = NORMAL) public static boolean showPotionInfo = true;
+    @Entry(category = NORMAL) public static boolean showConsumableInfo = true;
     @Entry(category = NORMAL) public static boolean showTippedArrowInfo = true;
     @Entry(category = NORMAL) public static boolean showTotemInfo = true;
     @Entry(category = NORMAL) public static boolean showArmorInfo = true;

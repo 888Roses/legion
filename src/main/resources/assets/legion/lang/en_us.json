@@ -7,6 +7,7 @@
   "legion.midnightconfig.modEnabled":"Legion Enabled",
 
   "legion.midnightconfig.showPotionInfo":"Show Potion Information",
+  "legion.midnightconfig.showConsumableInfo":"Show Consumable Information",
   "legion.midnightconfig.showTippedArrowInfo":"Show Tipped Arrow Information",
   "legion.midnightconfig.showTrimInfo":"Show Trim Information",
   "legion.midnightconfig.showTotemInfo":"Show Totem of Undying Information",
