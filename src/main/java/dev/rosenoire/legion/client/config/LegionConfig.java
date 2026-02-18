@@ -18,6 +18,12 @@ public class LegionConfig extends MidnightConfig {
     @Entry(category = NORMAL) public static boolean showTotemInfo = true;
     @Entry(category = NORMAL) public static boolean showArmorInfo = true;
 
+//    @Comment(category = NORMAL, name= "Entity Armor Configuration", centered = true)
+//    public static Comment comment2;
+//    @Entry(category = NORMAL) public static boolean showHorseArmorInfo = true;
+//    @Entry(category = NORMAL) public static boolean showDogArmorInfo = true;
+//    @Entry(category = NORMAL) public static boolean showNautilusArmorInfo = true;
+//    @Entry(category = NORMAL) public static boolean showGhastArmorInfo = true;
 
     // Illegal Catagory
     @Comment(category = WARNING, name= "(!) These options could be considered Cheating (!)", centered = true)

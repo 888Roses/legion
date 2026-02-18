@@ -12,5 +12,11 @@
   "legion.midnightconfig.showTrimInfo":"Show Trim Information",
   "legion.midnightconfig.showTotemInfo":"Show Totem of Undying Information",
   "legion.midnightconfig.showArmorInfo":"Show Armor Information",
+
+  "legion.midnightconfig.showHorseArmorInfo":"Show Horse Armor Information",
+  "legion.midnightconfig.showDogArmorInfo":"Show Dog Armor Information",
+  "legion.midnightconfig.showNautilusArmorInfo":"Show Nautilus Armor Information",
+  "legion.midnightconfig.showGhastArmorInfo":"Show Ghast Armor Information",
+
   "legion.midnightconfig.showSuspiciousStewInfo":"Show Suspicious Stew Information"
 }

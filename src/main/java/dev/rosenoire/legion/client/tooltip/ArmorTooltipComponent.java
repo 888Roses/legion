@@ -1,5 +1,6 @@
 package dev.rosenoire.legion.client.tooltip;
 
+import dev.rosenoire.legion.client.config.LegionConfig;
 import net.collectively.geode.helpers.RenderHelper;
 import net.collectively.geode.math.math;
 import net.collectively.geode.types.double3;
@@ -16,6 +17,7 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.EquippableComponent;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.GhastEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;

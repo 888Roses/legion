@@ -1,5 +1,6 @@
 package dev.rosenoire.legion.client.tooltip;
 
+import dev.rosenoire.legion.client.config.LegionConfig;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.EntityType;
