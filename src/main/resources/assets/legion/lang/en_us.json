@@ -12,6 +12,8 @@
   "legion.midnightconfig.showTrimInfo":"Show Trim Information",
   "legion.midnightconfig.showTotemInfo":"Show Totem of Undying Information",
   "legion.midnightconfig.showArmorInfo":"Show Armor Information",
+  "legion.midnightconfig.showCooldownInfo":"Show Cooldown Information",
+
 
   "legion.midnightconfig.showHorseArmorInfo":"Show Horse Armor Information",
   "legion.midnightconfig.showDogArmorInfo":"Show Dog Armor Information",

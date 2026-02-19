@@ -17,8 +17,9 @@ public class LegionConfig extends MidnightConfig {
     @Entry(category = NORMAL) public static boolean showTippedArrowInfo = true;
     @Entry(category = NORMAL) public static boolean showTotemInfo = true;
     @Entry(category = NORMAL) public static boolean showArmorInfo = true;
+    @Entry(category = NORMAL) public static boolean showCooldownInfo = true;
 
-//    @Comment(category = NORMAL, name= "Entity Armor Configuration", centered = true)
+//    @Comment(category = NORMAL, name= "Armor Configuration", centered = true)
 //    public static Comment comment2;
 //    @Entry(category = NORMAL) public static boolean showHorseArmorInfo = true;
 //    @Entry(category = NORMAL) public static boolean showDogArmorInfo = true;

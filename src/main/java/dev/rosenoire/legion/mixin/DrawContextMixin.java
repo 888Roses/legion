@@ -1,5 +1,6 @@
 package dev.rosenoire.legion.mixin;
 
+import dev.rosenoire.legion.client.config.LegionConfig;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -22,21 +23,21 @@ public abstract class DrawContextMixin {
     private void legion$drawStackOverlay(TextRenderer textRenderer, ItemStack itemStack, int x, int y, String stackCountText, CallbackInfo ci) {
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
         if (player == null) return;
+        if (LegionConfig.showCooldownInfo) {
+            ItemCooldownManager cooldownManager = player.getItemCooldownManager();
+            if (!cooldownManager.isCoolingDown(itemStack)) return;
 
-        ItemCooldownManager cooldownManager = player.getItemCooldownManager();
-        if (!cooldownManager.isCoolingDown(itemStack)) return;
+            ItemCooldownManager.Entry entry = cooldownManager.entries.get(cooldownManager.getGroup(itemStack));
+            int cooldown = entry.endTick - cooldownManager.tick;
+            double cooldownDurationSeconds = cooldown / 20d;
 
-        ItemCooldownManager.Entry entry = cooldownManager.entries.get(cooldownManager.getGroup(itemStack));
-        int cooldown = entry.endTick - cooldownManager.tick;
-        double cooldownDurationSeconds = cooldown / 20d;
+            String text;
+            if (cooldownDurationSeconds > 60) {
+                double cooldownDurationMinutes = cooldownDurationSeconds / 60d;
+                text = Math.round(cooldownDurationMinutes) + "m";
+            } else text = Math.round(cooldownDurationSeconds) + "s";
 
-        String text;
-        if (cooldownDurationSeconds > 60) {
-            double cooldownDurationMinutes = cooldownDurationSeconds / 60d;
-            text = Math.round(cooldownDurationMinutes) + "m";
+            drawText(textRenderer, Text.literal(text), x, y, 0xffFFFFFF, true);
         }
-        else text = Math.round(cooldownDurationSeconds) + "s";
-
-        drawText(textRenderer, Text.literal(text), x, y, 0xffFFFFFF, true);
     }
 }
